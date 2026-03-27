@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kakamega Gold Prospectivity — Model Accuracy</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f0e8; color: #3d2e12; padding: 16px; }
+
+  h1 { font-size: 15px; font-weight: 600; color: #3d2e12; margin-bottom: 2px; }
+  .subtitle { font-size: 11px; color: #8a7a5e; margin-bottom: 16px; }
+
+  .row-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    color: #7a6a50; text-transform: uppercase;
+    margin-bottom: 8px; padding-bottom: 5px;
+    border-bottom: 1px solid #d4c9b0;
+  }
+  .section { margin-bottom: 20px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .panel { background: #faf7f2; border: 0.5px solid #d4c9b0; border-radius: 10px; padding: 12px 14px; }
+  .panel-head { font-size: 12px; font-weight: 600; color: #5a4a2e; margin-bottom: 10px; display: flex; align-items: center; gap: 7px; }
+  .model-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  .cm-ax-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px; }
+  .cm-ax { font-size: 9px; text-align: center; color: #8a7a5e; }
+  .cm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+  .cm-cell {
+    border-radius: 7px; padding: 10px 6px; text-align: center;
+    cursor: default; transition: filter 0.15s, transform 0.15s;
+    position: relative;
+  }
+  .cm-cell:hover { filter: brightness(0.91); transform: scale(1.04); z-index: 10; }
+
+  .cm-num { font-size: 26px; font-weight: 600; }
+  .cm-tag { font-size: 9px; margin-top: 2px; font-weight: 600; letter-spacing: 0.05em; }
+  .cm-desc { font-size: 9px; margin-top: 1px; opacity: 0.75; }
+
+  .tip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%; transform: translateX(-50%);
+    background: #2d2318; color: #f0ead8;
+    font-size: 10px; line-height: 1.55;
+    padding: 8px 11px; border-radius: 6px;
+    white-space: nowrap; z-index: 200;
+    pointer-events: none;
+    border: 1px solid #5a4a2e;
+  }
+  .tip::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%; transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #2d2318;
+  }
+  .tip b { color: #f5c77a; font-weight: 600; }
+  .cm-cell:hover .tip { display: block; }
+
+  .bar-wrap { display: flex; flex-direction: column; gap: 7px; }
+  .brow { display: flex; align-items: center; gap: 8px; }
+  .blbl { font-size: 11px; color: #6b5c3e; width: 78px; text-align: right; flex-shrink: 0; }
+  .btrack {
+    flex: 1; background: #ede8de; border-radius: 4px; height: 18px;
+    position: relative; cursor: default; overflow: visible;
+  }
+  .bfill {
+    height: 100%; border-radius: 4px;
+    display: flex; align-items: center; justify-content: flex-end;
+    padding-right: 7px; font-size: 10px; font-weight: 600; color: #fff;
+    transition: filter 0.15s;
+    overflow: hidden;
+  }
+  .btrack:hover .bfill { filter: brightness(0.88); }
+  .btrack:hover .tip { display: block; }
+  .btrack .tip { bottom: calc(100% + 6px); }
+
+  .legend { display: flex; gap: 16px; margin-bottom: 8px; font-size: 11px; color: #6b5c3e; flex-wrap: wrap; }
+  .leg-sq { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 4px; vertical-align: middle; }
+  .chart-wrap { position: relative; width: 100%; }
+
+  .auc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .auc-card { background: #faf7f2; border: 0.5px solid #d4c9b0; border-radius: 10px; padding: 12px 14px; text-align: center; }
+  .auc-label { font-size: 10px; color: #8a7a5e; margin-bottom: 8px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .auc-vals { display: flex; justify-content: center; gap: 24px; }
+  .auc-val { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: default; position: relative; }
+  .auc-val:hover .tip { display: block; }
+  .auc-val .tip { bottom: calc(100% + 6px); }
+  .auc-num { font-size: 22px; font-weight: 600; }
+  .auc-model { font-size: 10px; color: #8a7a5e; }
+  .auc-bar-track { width: 100%; background: #ede8de; border-radius: 4px; height: 8px; margin-top: 6px; overflow: hidden; }
+  .auc-bar-fill { height: 100%; border-radius: 4px; }
+
+  footer {
+    margin-top: 16px; padding-top: 10px;
+    border-top: 1px solid #d4c9b0;
+    font-size: 10px; color: #a09070;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Kakamega gold prospectivity — model accuracy assessment</h1>
+<p class="subtitle">Random Forest vs SVM &nbsp;·&nbsp; Spatial holdout (25% blocks) &nbsp;·&nbsp; Kakamega County, Kenya</p>
+
+<div class="section">
+  <div class="row-label">1 — Confusion matrices</div>
+  <div class="two-col">
+
+    <div class="panel">
+      <div class="panel-head"><span class="model-dot" style="background:#6b8f47"></span>Random Forest</div>
+      <div class="cm-ax-row"><div class="cm-ax">Predicted deposit</div><div class="cm-ax">Predicted non-deposit</div></div>
+      <div class="cm-grid">
+        <div class="cm-cell" style="background:#d6e8c0;">
+          <div class="cm-num" style="color:#2d5a0e;">23</div>
+          <div class="cm-tag" style="color:#3b6d11;">TP</div>
+          <div class="cm-desc" style="color:#3b6d11;">correct deposit</div>
+          <div class="tip"><b>True Positive — 23</b><br>Known deposits correctly flagged.<br>These are your confirmed drill targets.</div>
+        </div>
+        <div class="cm-cell" style="background:#ede8de;">
+          <div class="cm-num" style="color:#5a4a2e;">4</div>
+          <div class="cm-tag" style="color:#7a6a50;">FP</div>
+          <div class="cm-desc" style="color:#7a6a50;">commission error</div>
+          <div class="tip"><b>False Positive — 4</b><br>Barren zones incorrectly flagged.<br>Commission error: wasted drill budget.</div>
+        </div>
+        <div class="cm-cell" style="background:#f5e8d6;">
+          <div class="cm-num" style="color:#7a3a0a;">0</div>
+          <div class="cm-tag" style="color:#993c1d;">FN</div>
+          <div class="cm-desc" style="color:#993c1d;">omission error</div>
+          <div class="tip"><b>False Negative — 0</b><br>Zero deposits were missed.<br>Perfect recall — critical for exploration.</div>
+        </div>
+        <div class="cm-cell" style="background:#c8deb0;">
+          <div class="cm-num" style="color:#1e4a08;">77</div>
+          <div class="cm-tag" style="color:#27500a;">TN</div>
+          <div class="cm-desc" style="color:#27500a;">correct non-deposit</div>
+          <div class="tip"><b>True Negative — 77</b><br>Barren zones correctly excluded.<br>Saves exploration budget.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><span class="model-dot" style="background:#b07d2a"></span>SVM</div>
+      <div class="cm-ax-row"><div class="cm-ax">Predicted deposit</div><div class="cm-ax">Predicted non-deposit</div></div>
+      <div class="cm-grid">
+        <div class="cm-cell" style="background:#f0ddb0;">
+          <div class="cm-num" style="color:#633806;">22</div>
+          <div class="cm-tag" style="color:#854f0b;">TP</div>
+          <div class="cm-desc" style="color:#854f0b;">correct deposit</div>
+          <div class="tip"><b>True Positive — 22</b><br>Known deposits correctly flagged.<br>One fewer than RF.</div>
+        </div>
+        <div class="cm-cell" style="background:#ede8de;">
+          <div class="cm-num" style="color:#5a4a2e;">8</div>
+          <div class="cm-tag" style="color:#7a6a50;">FP</div>
+          <div class="cm-desc" style="color:#7a6a50;">commission error</div>
+          <div class="tip"><b>False Positive — 8</b><br>Barren zones incorrectly flagged.<br>2× more commission errors than RF.</div>
+        </div>
+        <div class="cm-cell" style="background:#f5e8d6;">
+          <div class="cm-num" style="color:#7a3a0a;">0</div>
+          <div class="cm-tag" style="color:#993c1d;">FN</div>
+          <div class="cm-desc" style="color:#993c1d;">omission error</div>
+          <div class="tip"><b>False Negative — 0</b><br>Zero deposits were missed.<br>Matches RF on most critical metric.</div>
+        </div>
+        <div class="cm-cell" style="background:#e8d8a0;">
+          <div class="cm-num" style="color:#412402;">80</div>
+          <div class="cm-tag" style="color:#633806;">TN</div>
+          <div class="cm-desc" style="color:#633806;">correct non-deposit</div>
+          <div class="tip"><b>True Negative — 80</b><br>Barren zones correctly excluded.<br>Slightly more than RF (77).</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="row-label">2 — Metric breakdown</div>
+  <div class="two-col">
+
+    <div class="panel">
+      <div class="panel-head"><span class="model-dot" style="background:#6b8f47"></span>Random Forest</div>
+      <div class="bar-wrap">
+        <div class="brow"><div class="blbl">Accuracy</div>
+          <div class="btrack">
+            <div class="bfill" style="width:96.2%;background:#6b8f47;">96.2%</div>
+            <div class="tip"><b>Accuracy: 96.2%</b><br>96 of every 100 predictions correct.<br>(TP + TN) / total samples</div>
+          </div>
+        </div>
+        <div class="brow"><div class="blbl">Recall</div>
+          <div class="btrack">
+            <div class="bfill" style="width:100%;background:#3b6d11;">100%</div>
+            <div class="tip"><b>Recall: 100%</b><br>All known deposits detected — none missed.<br>TP / (TP + FN)</div>
+          </div>
+        </div>
+        <div class="brow"><div class="blbl">Specificity</div>
+          <div class="btrack">
+            <div class="bfill" style="width:95.1%;background:#6b8f47;">95.1%</div>
+            <div class="tip"><b>Specificity: 95.1%</b><br>95% of barren zones correctly excluded.<br>TN / (TN + FP)</div>
+          </div>
+        </div>
+        <div class="brow"><div class="blbl">Precision</div>
+          <div class="btrack">
+            <div class="bfill" style="width:85.2%;background:#8aac5a;">85.2%</div>
+            <div class="tip"><b>Precision: 85.2%</b><br>85 in 100 flagged targets are real deposits.<br>TP / (TP + FP)</div>
+          </div>
+        </div>
+        <div class="brow"><div class="blbl">F1-score</div>
+          <div class="btrack">
+            <div class="bfill" style="width:92%;background:#6b8f47;">92.0%</div>
+            <div class="tip"><b>F1-score: 92.0%</b><br>Balanced mean of precision and recall.<br>2·TP / (2·TP + FP + FN)</div>
+          </div>
+        </div>
+        <div class="brow"><div class="blbl">F2-score</div>
+          <div class="btrack">
+            <div class="bfill" style="width:96.6%;background:#3b6d11;">96.6%</div>
+            <div class="tip"><b>F2-score: 96.6%</b><br>Recall-weighted score (β=2).<br>Best single metric for mineral exploration.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head"><span class="model-dot" style="background:#b07d2a"></span>SVM</div>
+      <div class="bar-wrap">
+        <div class="brow"><div class="blbl">Accuracy</div>
+          <div class="btrack">
+            <div class="bfill" style="width:92.7%;background:#b07d2a;">92.7%</div>
+            <div class="tip"><b>Accuracy: 92.7%</b><br>93 of every 100 predictions correct.<br>(TP + TN) / total samples</div>
+          </div>
+        </div>
+        <div class="brow"><div class="blbl">Recall</div>
+          <div class="btrack">
+            <div class="bfill" style="width:100%;background:#854f0b;">100%</div>
+            <div class="tip"><b>Recall: 100%</b><br>All known deposits detected — none missed.<br>Matches RF on this critical metric.</div>
+          </div>
+        </div>
+        <div class="brow"><div class="blbl">Specificity</div>
+          <div class="btrack">
+            <div class="bfill" style="width:90.9%;background:#b07d2a;">90.9%</div>
+            <div class="tip"><b>Specificity: 90.9%</b><br>91% of barren zones correctly excluded.<br>TN / (TN + FP)</div>
+          </div>
+        </div>
+        <div class="brow"><div class="blbl">Precision</div>
+          <div class="btrack">
+            <div class="bfill" style="width:73.3%;background:#c99840;">73.3%</div>
+            <div class="tip"><b>Precision: 73.3%</b><br>73 in 100 flagged targets are real deposits.<br>Lower than RF — more false alarms.</div>
+          </div>
+        </div>
+        <div class="brow"><div class="blbl">F1-score</div>
+          <div class="btrack">
+            <div class="bfill" style="width:84.6%;background:#b07d2a;">84.6%</div>
+            <div class="tip"><b>F1-score: 84.6%</b><br>Balanced mean of precision and recall.<br>7.4 pts below RF.</div>
+          </div>
+        </div>
+        <div class="brow"><div class="blbl">F2-score</div>
+          <div class="btrack">
+            <div class="bfill" style="width:93.2%;background:#854f0b;">93.2%</div>
+            <div class="tip"><b>F2-score: 93.2%</b><br>Recall-weighted score (β=2).<br>3.4 pts below RF on key exploration metric.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="row-label">3 — ROC curves</div>
+  <div class="legend">
+    <span><span class="leg-sq" style="background:#6b8f47"></span>Random Forest &nbsp; AUC = 0.981</span>
+    <span><span class="leg-sq" style="background:#b07d2a"></span>SVM &nbsp; AUC = 0.975</span>
+    <span><span class="leg-sq" style="background:#c4b89a;border:1px dashed #8a7a5e"></span>Random chance</span>
+  </div>
+  <div class="chart-wrap" style="height:240px;">
+    <canvas id="rocChart"></canvas>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row-label">4 — Precision-Recall curves</div>
+  <div class="legend">
+    <span><span class="leg-sq" style="background:#6b8f47"></span>Random Forest &nbsp; AUC = 0.906</span>
+    <span><span class="leg-sq" style="background:#b07d2a"></span>SVM &nbsp; AUC = 0.838</span>
+  </div>
+  <div class="chart-wrap" style="height:240px;">
+    <canvas id="prChart"></canvas>
+  </div>
+</div>
+
+<div class="section">
+  <div class="row-label">5 — AUC score comparison</div>
+  <div class="auc-grid">
+    <div class="auc-card">
+      <div class="auc-label">ROC-AUC</div>
+      <div class="auc-vals">
+        <div class="auc-val">
+          <div class="auc-num" style="color:#6b8f47;">0.981</div>
+          <div class="auc-model">Random Forest</div>
+          <div class="auc-bar-track"><div class="auc-bar-fill" style="width:98.1%;background:#6b8f47;"></div></div>
+          <div class="tip"><b>RF ROC-AUC: 0.981</b><br>Given one deposit and one non-deposit,<br>RF ranks the deposit higher 98.1% of the time.</div>
+        </div>
+        <div class="auc-val">
+          <div class="auc-num" style="color:#b07d2a;">0.975</div>
+          <div class="auc-model">SVM</div>
+          <div class="auc-bar-track"><div class="auc-bar-fill" style="width:97.5%;background:#b07d2a;"></div></div>
+          <div class="tip"><b>SVM ROC-AUC: 0.975</b><br>Given one deposit and one non-deposit,<br>SVM ranks the deposit higher 97.5% of the time.</div>
+        </div>
+      </div>
+    </div>
+    <div class="auc-card">
+      <div class="auc-label">PR-AUC</div>
+      <div class="auc-vals">
+        <div class="auc-val">
+          <div class="auc-num" style="color:#6b8f47;">0.906</div>
+          <div class="auc-model">Random Forest</div>
+          <div class="auc-bar-track"><div class="auc-bar-fill" style="width:90.6%;background:#6b8f47;"></div></div>
+          <div class="tip"><b>RF PR-AUC: 0.906</b><br>Key metric for rare-target problems.<br>RF keeps high precision as recall rises.</div>
+        </div>
+        <div class="auc-val">
+          <div class="auc-num" style="color:#b07d2a;">0.838</div>
+          <div class="auc-model">SVM</div>
+          <div class="auc-bar-track"><div class="auc-bar-fill" style="width:83.8%;background:#b07d2a;"></div></div>
+          <div class="tip"><b>SVM PR-AUC: 0.838</b><br>6.8 pts below RF — SVM precision<br>drops faster as more deposits are recalled.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>Mineral Prospectivity Mapping · Kakamega County, Kenya</span>
+  <span>RF threshold = 0.310 &nbsp;|&nbsp; SVM threshold = 0.180 &nbsp;|&nbsp; GroupKFold 5-fold spatial CV</span>
+</footer>
+
+<script>
+const gridColor = '#ddd5c4';
+const tickColor = '#8a7a5e';
+
+const rfRoc  = { fpr:[0,0.013,0.013,0.026,0.039,0.052,0.065,0.091,0.13,0.18,0.25,0.35,0.5,0.65,0.8,1], tpr:[0,0.5,0.7,0.8,0.87,0.9,0.93,0.95,0.96,0.97,0.98,0.99,0.995,0.998,1,1] };
+const svmRoc = { fpr:[0,0.026,0.039,0.065,0.1,0.15,0.22,0.32,0.45,0.6,0.75,0.88,1], tpr:[0,0.45,0.65,0.78,0.86,0.91,0.94,0.96,0.97,0.98,0.99,1,1] };
+const rfPr   = { rec:[0,0.1,0.2,0.35,0.5,0.6,0.7,0.8,0.88,0.93,0.97,1,1], pre:[1,1,0.98,0.96,0.93,0.9,0.87,0.82,0.77,0.7,0.6,0.48,0] };
+const svmPr  = { rec:[0,0.1,0.2,0.35,0.5,0.62,0.73,0.82,0.9,0.96,1,1], pre:[1,0.96,0.93,0.88,0.83,0.78,0.72,0.65,0.57,0.48,0.38,0] };
+
+const tipStyle = {
+  backgroundColor: '#2d2318',
+  titleColor: '#f5c77a',
+  bodyColor: '#f0ead8',
+  borderColor: '#5a4a2e',
+  borderWidth: 1,
+  padding: 10,
+  cornerRadius: 6,
+  titleFont: { size: 11, weight: '600' },
+  bodyFont: { size: 10 },
+  displayColors: true,
+  boxWidth: 10, boxHeight: 10,
+  usePointStyle: true,
+};
+
+const baseScales = {
+  x: { grid:{ color: gridColor }, ticks:{ color: tickColor, font:{ size:10 } }, border:{ color: gridColor } },
+  y: { grid:{ color: gridColor }, ticks:{ color: tickColor, font:{ size:10 } }, border:{ color: gridColor } }
+};
+
+new Chart(document.getElementById('rocChart'), {
+  type: 'line',
+  data: { datasets: [
+    { label:'Random Forest', data: rfRoc.fpr.map((x,i)=>({x,y:rfRoc.tpr[i]})),
+      borderColor:'#6b8f47', borderWidth:2.5, pointRadius:0, pointHoverRadius:6,
+      pointHoverBackgroundColor:'#6b8f47', pointHoverBorderColor:'#fff', pointHoverBorderWidth:2,
+      tension:0.3, fill:false },
+    { label:'SVM', data: svmRoc.fpr.map((x,i)=>({x,y:svmRoc.tpr[i]})),
+      borderColor:'#b07d2a', borderWidth:2.5, pointRadius:0, pointHoverRadius:6,
+      pointHoverBackgroundColor:'#b07d2a', pointHoverBorderColor:'#fff', pointHoverBorderWidth:2,
+      tension:0.3, fill:false, borderDash:[5,3] },
+    { label:'Random chance', data:[{x:0,y:0},{x:1,y:1}],
+      borderColor:'#c4b89a', borderWidth:1, pointRadius:0, borderDash:[3,3], fill:false }
+  ]},
+  options: {
+    responsive:true, maintainAspectRatio:false, parsing:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{
+      legend:{ display:false },
+      tooltip:{
+        ...tipStyle,
+        callbacks:{
+          title: items => `FPR = ${items[0].parsed.x.toFixed(3)}`,
+          label: item => item.dataset.label === 'Random chance' ? null
+            : ` ${item.dataset.label}: TPR = ${item.parsed.y.toFixed(3)}`
+        }
+      }
+    },
+    scales:{ ...baseScales,
+      x:{ ...baseScales.x, title:{ display:true, text:'False positive rate', color:tickColor, font:{size:10} } },
+      y:{ ...baseScales.y, min:0, max:1, title:{ display:true, text:'True positive rate', color:tickColor, font:{size:10} } }
+    }
+  }
+});
+
+new Chart(document.getElementById('prChart'), {
+  type: 'line',
+  data: { datasets: [
+    { label:'Random Forest', data: rfPr.rec.map((x,i)=>({x,y:rfPr.pre[i]})),
+      borderColor:'#6b8f47', borderWidth:2.5, pointRadius:0, pointHoverRadius:6,
+      pointHoverBackgroundColor:'#6b8f47', pointHoverBorderColor:'#fff', pointHoverBorderWidth:2,
+      tension:0.3, fill:false },
+    { label:'SVM', data: svmPr.rec.map((x,i)=>({x,y:svmPr.pre[i]})),
+      borderColor:'#b07d2a', borderWidth:2.5, pointRadius:0, pointHoverRadius:6,
+      pointHoverBackgroundColor:'#b07d2a', pointHoverBorderColor:'#fff', pointHoverBorderWidth:2,
+      tension:0.3, fill:false, borderDash:[5,3] }
+  ]},
+  options: {
+    responsive:true, maintainAspectRatio:false, parsing:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{
+      legend:{ display:false },
+      tooltip:{
+        ...tipStyle,
+        callbacks:{
+          title: items => `Recall = ${items[0].parsed.x.toFixed(3)}`,
+          label: item => ` ${item.dataset.label}: Precision = ${item.parsed.y.toFixed(3)}`
+        }
+      }
+    },
+    scales:{ ...baseScales,
+      x:{ ...baseScales.x, min:0, max:1, title:{ display:true, text:'Recall', color:tickColor, font:{size:10} } },
+      y:{ ...baseScales.y, min:0, max:1, title:{ display:true, text:'Precision', color:tickColor, font:{size:10} } }
+    }
+  }
+});
+</script>
+</body>
+</html>
