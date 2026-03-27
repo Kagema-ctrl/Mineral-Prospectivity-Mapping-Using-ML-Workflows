@@ -121,25 +121,25 @@
           <div class="cm-num" style="color:#2d5a0e;">23</div>
           <div class="cm-tag" style="color:#3b6d11;">TP</div>
           <div class="cm-desc" style="color:#3b6d11;">correct deposit</div>
-          <div class="tip"><b>True Positive — 23</b><br>Known deposits correctly flagged.<br>These are your confirmed drill targets.</div>
+          <div class="tip"><b>True Positive: 23</b><br>Known deposits correctly flagged.<br>These are your confirmed drill targets.</div>
         </div>
         <div class="cm-cell" style="background:#ede8de;">
           <div class="cm-num" style="color:#5a4a2e;">4</div>
           <div class="cm-tag" style="color:#7a6a50;">FP</div>
           <div class="cm-desc" style="color:#7a6a50;">commission error</div>
-          <div class="tip"><b>False Positive — 4</b><br>Barren zones incorrectly flagged.<br>Commission error: wasted drill budget.</div>
+          <div class="tip"><b>False Positive: 4</b><br>Barren zones incorrectly flagged.<br>Commission error: wasted drill budget.</div>
         </div>
         <div class="cm-cell" style="background:#f5e8d6;">
           <div class="cm-num" style="color:#7a3a0a;">0</div>
           <div class="cm-tag" style="color:#993c1d;">FN</div>
           <div class="cm-desc" style="color:#993c1d;">omission error</div>
-          <div class="tip"><b>False Negative — 0</b><br>Zero deposits were missed.<br>Perfect recall — critical for exploration.</div>
+          <div class="tip"><b>False Negative: 0</b><br>Zero deposits were missed.<br>Perfect recall, critical for exploration.</div>
         </div>
         <div class="cm-cell" style="background:#c8deb0;">
           <div class="cm-num" style="color:#1e4a08;">77</div>
           <div class="cm-tag" style="color:#27500a;">TN</div>
           <div class="cm-desc" style="color:#27500a;">correct non-deposit</div>
-          <div class="tip"><b>True Negative — 77</b><br>Barren zones correctly excluded.<br>Saves exploration budget.</div>
+          <div class="tip"><b>True Negative: 77</b><br>Barren zones correctly excluded.<br>Saves exploration budget.</div>
         </div>
       </div>
     </div>
@@ -152,25 +152,25 @@
           <div class="cm-num" style="color:#633806;">22</div>
           <div class="cm-tag" style="color:#854f0b;">TP</div>
           <div class="cm-desc" style="color:#854f0b;">correct deposit</div>
-          <div class="tip"><b>True Positive — 22</b><br>Known deposits correctly flagged.<br>One fewer than RF.</div>
+          <div class="tip"><b>True Positive: 22</b><br>Known deposits correctly flagged.<br>One fewer than RF.</div>
         </div>
         <div class="cm-cell" style="background:#ede8de;">
           <div class="cm-num" style="color:#5a4a2e;">8</div>
           <div class="cm-tag" style="color:#7a6a50;">FP</div>
           <div class="cm-desc" style="color:#7a6a50;">commission error</div>
-          <div class="tip"><b>False Positive — 8</b><br>Barren zones incorrectly flagged.<br>2× more commission errors than RF.</div>
+          <div class="tip"><b>False Positive: 8</b><br>Barren zones incorrectly flagged.<br>2x more commission errors than RF.</div>
         </div>
         <div class="cm-cell" style="background:#f5e8d6;">
           <div class="cm-num" style="color:#7a3a0a;">0</div>
           <div class="cm-tag" style="color:#993c1d;">FN</div>
           <div class="cm-desc" style="color:#993c1d;">omission error</div>
-          <div class="tip"><b>False Negative — 0</b><br>Zero deposits were missed.<br>Matches RF on most critical metric.</div>
+          <div class="tip"><b>False Negative: 0</b><br>Zero deposits were missed.<br>Matches RF on the most critical metric.</div>
         </div>
         <div class="cm-cell" style="background:#e8d8a0;">
           <div class="cm-num" style="color:#412402;">80</div>
           <div class="cm-tag" style="color:#633806;">TN</div>
           <div class="cm-desc" style="color:#633806;">correct non-deposit</div>
-          <div class="tip"><b>True Negative — 80</b><br>Barren zones correctly excluded.<br>Slightly more than RF (77).</div>
+          <div class="tip"><b>True Negative: 80</b><br>Barren zones correctly excluded.<br>Slightly more than RF (77).</div>
         </div>
       </div>
     </div>
@@ -188,37 +188,37 @@
         <div class="brow"><div class="blbl">Accuracy</div>
           <div class="btrack">
             <div class="bfill" style="width:96.2%;background:#6b8f47;">96.2%</div>
-            <div class="tip"><b>Accuracy: 96.2%</b><br>96 of every 100 predictions correct.<br>(TP + TN) / total samples</div>
+            <div class="tip"><b>Accuracy: 96.2%</b><br>96 of every 100 predictions correct.<br>Formula: (TP + TN) / total samples</div>
           </div>
         </div>
         <div class="brow"><div class="blbl">Recall</div>
           <div class="btrack">
             <div class="bfill" style="width:100%;background:#3b6d11;">100%</div>
-            <div class="tip"><b>Recall: 100%</b><br>All known deposits detected — none missed.<br>TP / (TP + FN)</div>
+            <div class="tip"><b>Recall: 100%</b><br>All known deposits detected, none missed.<br>Formula: TP / (TP + FN)</div>
           </div>
         </div>
         <div class="brow"><div class="blbl">Specificity</div>
           <div class="btrack">
             <div class="bfill" style="width:95.1%;background:#6b8f47;">95.1%</div>
-            <div class="tip"><b>Specificity: 95.1%</b><br>95% of barren zones correctly excluded.<br>TN / (TN + FP)</div>
+            <div class="tip"><b>Specificity: 95.1%</b><br>95% of barren zones correctly excluded.<br>Formula: TN / (TN + FP)</div>
           </div>
         </div>
         <div class="brow"><div class="blbl">Precision</div>
           <div class="btrack">
             <div class="bfill" style="width:85.2%;background:#8aac5a;">85.2%</div>
-            <div class="tip"><b>Precision: 85.2%</b><br>85 in 100 flagged targets are real deposits.<br>TP / (TP + FP)</div>
+            <div class="tip"><b>Precision: 85.2%</b><br>85 in 100 flagged targets are real deposits.<br>Formula: TP / (TP + FP)</div>
           </div>
         </div>
         <div class="brow"><div class="blbl">F1-score</div>
           <div class="btrack">
             <div class="bfill" style="width:92%;background:#6b8f47;">92.0%</div>
-            <div class="tip"><b>F1-score: 92.0%</b><br>Balanced mean of precision and recall.<br>2·TP / (2·TP + FP + FN)</div>
+            <div class="tip"><b>F1-score: 92.0%</b><br>Balanced mean of precision and recall.<br>Formula: 2xTP / (2xTP + FP + FN)</div>
           </div>
         </div>
         <div class="brow"><div class="blbl">F2-score</div>
           <div class="btrack">
             <div class="bfill" style="width:96.6%;background:#3b6d11;">96.6%</div>
-            <div class="tip"><b>F2-score: 96.6%</b><br>Recall-weighted score (β=2).<br>Best single metric for mineral exploration.</div>
+            <div class="tip"><b>F2-score: 96.6%</b><br>Recall-weighted score (beta = 2).<br>Best single metric for mineral exploration.</div>
           </div>
         </div>
       </div>
@@ -230,25 +230,25 @@
         <div class="brow"><div class="blbl">Accuracy</div>
           <div class="btrack">
             <div class="bfill" style="width:92.7%;background:#b07d2a;">92.7%</div>
-            <div class="tip"><b>Accuracy: 92.7%</b><br>93 of every 100 predictions correct.<br>(TP + TN) / total samples</div>
+            <div class="tip"><b>Accuracy: 92.7%</b><br>93 of every 100 predictions correct.<br>Formula: (TP + TN) / total samples</div>
           </div>
         </div>
         <div class="brow"><div class="blbl">Recall</div>
           <div class="btrack">
             <div class="bfill" style="width:100%;background:#854f0b;">100%</div>
-            <div class="tip"><b>Recall: 100%</b><br>All known deposits detected — none missed.<br>Matches RF on this critical metric.</div>
+            <div class="tip"><b>Recall: 100%</b><br>All known deposits detected, none missed.<br>Matches RF on this critical metric.</div>
           </div>
         </div>
         <div class="brow"><div class="blbl">Specificity</div>
           <div class="btrack">
             <div class="bfill" style="width:90.9%;background:#b07d2a;">90.9%</div>
-            <div class="tip"><b>Specificity: 90.9%</b><br>91% of barren zones correctly excluded.<br>TN / (TN + FP)</div>
+            <div class="tip"><b>Specificity: 90.9%</b><br>91% of barren zones correctly excluded.<br>Formula: TN / (TN + FP)</div>
           </div>
         </div>
         <div class="brow"><div class="blbl">Precision</div>
           <div class="btrack">
             <div class="bfill" style="width:73.3%;background:#c99840;">73.3%</div>
-            <div class="tip"><b>Precision: 73.3%</b><br>73 in 100 flagged targets are real deposits.<br>Lower than RF — more false alarms.</div>
+            <div class="tip"><b>Precision: 73.3%</b><br>73 in 100 flagged targets are real deposits.<br>Lower than RF, more false alarms.</div>
           </div>
         </div>
         <div class="brow"><div class="blbl">F1-score</div>
@@ -260,7 +260,7 @@
         <div class="brow"><div class="blbl">F2-score</div>
           <div class="btrack">
             <div class="bfill" style="width:93.2%;background:#854f0b;">93.2%</div>
-            <div class="tip"><b>F2-score: 93.2%</b><br>Recall-weighted score (β=2).<br>3.4 pts below RF on key exploration metric.</div>
+            <div class="tip"><b>F2-score: 93.2%</b><br>Recall-weighted score (beta = 2).<br>3.4 pts below RF on key exploration metric.</div>
           </div>
         </div>
       </div>
@@ -325,7 +325,7 @@
           <div class="auc-num" style="color:#b07d2a;">0.838</div>
           <div class="auc-model">SVM</div>
           <div class="auc-bar-track"><div class="auc-bar-fill" style="width:83.8%;background:#b07d2a;"></div></div>
-          <div class="tip"><b>SVM PR-AUC: 0.838</b><br>6.8 pts below RF — SVM precision<br>drops faster as more deposits are recalled.</div>
+          <div class="tip"><b>SVM PR-AUC: 0.838</b><br>6.8 pts below RF. SVM precision<br>drops faster as more deposits are recalled.</div>
         </div>
       </div>
     </div>
