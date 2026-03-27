@@ -1,11 +1,6 @@
 # Mineral-Prospectivity-Mapping-Using-ML-Workflows
 This repository contains the end-to-end GeoAI workflow used to produce gold prospectivity maps for Kakamega County. The workflow is ArcGIS-centric and integrates remote sensing indices, terrain derivatives, structural proxies, and geochemical pathfinders into machine-learning models.Outputs feed directly into an ArcGIS Hub “Prospectivity Portal,” Dashboards for insights, and Survey123/StoryMaps for ground-truthing and storytelling.
 
-# Core notebooks (run in this order):
-PointExtraction.ipynb — builds the training table by extracting raster covariate values to labelled points.
-ML_Algorithms.ipynb — trains/evaluates multiple models (e.g., Random Forest, SVM), with spatially aware validation and model comparison.
-SVM.ipynb — focuses the pipeline on a tuned SVM and produces final probability rasters for deployment.
-
 # What this project does
 Aggregates multi-source geoscience data (lithology proxies, structure, DEM derivatives, RS indices, geochem) into a consistent modeling table.
 Trains and compares ML models with grouped cross-validation to reduce spatial leakage.
